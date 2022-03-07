@@ -72,7 +72,13 @@ class Fusion_dataset(Dataset):
         elif self.split=='val':
             vis_path = self.filepath_vis[index]
             ir_path = self.filepath_ir[index]
-            image_vis = np.array(Image.open(vis_path))
+            image_vis_raw = np.array(Image.open(vis_path))
+            # 2D to 3D if vis is gray
+            image_vis = (
+                np.repeat(image_vis_raw.flat, 3).reshape(*image_vis_raw.shape, 3)
+                if len(image_vis_raw.shape) == 2
+                else image_vis_raw
+            )
             image_inf = cv2.imread(ir_path, 0)
             image_vis = (
                 np.asarray(Image.fromarray(image_vis), dtype=np.float32).transpose(
